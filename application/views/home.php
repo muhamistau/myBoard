@@ -3,6 +3,7 @@
 <head>
 	<?php header('Control-Allow-Origin'); ?>
 	<title>Home</title>
+	
     <meta charset="utf-8"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/font-awesome-4/css/font-awesome.css">
@@ -12,41 +13,6 @@
 </head>
 <body>
 	<?php $this->load->library('form_validation') ?>
-
-	<div class="login"> <!-- Login -->
-			<h1>Welcome to myBoard</h1>
-			<div class="login-form">
-				<?php echo form_open('main_controller/login'); ?>	
-					<table>
-						<tr>
-							<td>
-								<labe>Username</labe>
-							</td>
-							<td>
-								<input type="Text" name="username" placeholder=" e.g. myUname" >
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<labe>Password</labe> 
-							</td>
-							<td>
-								<input type="Password" name="password" placeholder=" e.g. myPrivate" >	
-							</td>
-						</tr>
-					</table>
-					<div class="btn-login">
-						<input type="submit" name="login" value="Login">
-					</div>
-				</form>
-				<div class="btn-login">
-					<a href="<?= base_url('index.php/main_controller/signup')?>"><button class="btn-signup">Sign Up</button></a>
-				</div>
-			</div>
-			<br>
-			<center><?php echo validation_errors();  ?></center>
-			<center><?php echo $error;  ?></center>
-	</div> <!-- end login -->
 	<div class="text-container">
 		<div class="bg-image" style="background-image: url(<?php echo base_url(); ?>assets/image/home-image-v2.jpg);"> <!-- Background Image -->
 			<div class="text-jumbo">
@@ -60,3 +26,23 @@
 			</div>
 		</div> <!-- end Bg-Image -->
 	</div>
+
+	<div class="login"> <!-- Login -->
+			<h1>Welcome to myBoard</h1>
+			<div class="login-form">
+				<?php echo form_open('main_controller/login'); ?>	
+					<labe>Username</labe> <?php echo form_error('username', '<div class="error">', '</div>')?>
+					<input type="Text" name="username" placeholder=" e.g. myUname" size="35" value="<?= set_value('username')?>"> <br> <br>
+					<labe>Password</labe> <?php echo form_error('password', '<div class="error">', '</div>')?>
+					<input type="Password" name="password" placeholder=" e.g. myPrivate" size="35" > <br> <br>
+					<div class="btn-login">
+						<input type="submit" name="login" value="Login">
+					</div>
+				</form>
+				<div class="btn-login">
+					<a href="<?= base_url('main_controller/signup')?>"><button class="btn-signup">Sign Up</button></a>
+				</div>
+			</div>
+			<br>
+			<center class="error"><?php echo $error;  ?></center>
+	</div> <!-- end login -->

@@ -27,22 +27,25 @@ class Main_controller extends CI_Controller {
 			$this->load->view('footer');
 			return;
 		}
-		redirect(base_url('index.php/main_controller/board'));
+		redirect(base_url('Main_controller/board'));
 	}
 
 	public function login()
 	{
 		if( !isset($_POST['login']) ) {
-			redirect('main_controller');
+			redirect('Main_controller');
 			return;
 		}
 		
 		$this->load->helper('form');
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('username', 'Username', 'required');
-		$this->form_validation->set_rules('password', 'Password', 'required');
-
+		$this->form_validation->set_rules('username', 'Username', 'required', 
+								array('required' => 'Required Username')
+							);
+		$this->form_validation->set_rules('password', 'Password', 'required',
+								array('required' => 'Required Password')
+							);
 		if($this->form_validation->run() === FALSE ) {
 			$this->data['error'] = "";			
 			$this->load->view('header');
@@ -81,7 +84,7 @@ class Main_controller extends CI_Controller {
 			);
 
 			$this->session->set_userdata($sess_user);
-			redirect(base_url('index.php/main_controller/board'));		
+			redirect(base_url('Main_controller/board'));		
 		}
 	}
 
@@ -100,12 +103,12 @@ class Main_controller extends CI_Controller {
 		);
 		$this->form_validation->set_rules(
 			'username', 'Username', 
-			'required|min_length[5]|max_length[12]|is_unique[user.username]',
+			'required|min_length[5]|max_length[12]|is_unique[myboard_user.username]',
 			array(
 				'required' => 'Required Username',
 				'min_length' => 'Min 5 characters',
 				'max_length' => 'Max 12 characters',
-				'is_unique' => 'Uername has been used' 
+				'is_unique' => 'Username has been used' 
 			)
 		);
 		$this->form_validation->set_rules('password', 'Password',
@@ -127,7 +130,7 @@ class Main_controller extends CI_Controller {
 
 	        $this->load->view('templates/header_home_signup');
 	        $this->load->view('signup');
-	        $this->load->view('footer');
+	        // $this->load->view('footer');
 	    
 	    } else {
 
@@ -135,7 +138,7 @@ class Main_controller extends CI_Controller {
    			$this->data['error'] = "*You can login now";
 			$this->load->view('header');
 			$this->load->view('home', $this->data);
-			$this->load->view('footer');
+			// $this->load->view('footer');
 			return;
 		}
 	}
@@ -143,13 +146,13 @@ class Main_controller extends CI_Controller {
 	public function logout()
 	{
 		$this->session->sess_destroy();
-		redirect(base_url('index.php/main_controller/'));
+		redirect(base_url('Main_controller/'));
 	}
 	
 	public function board() {
 
 		if( empty( $this->session->userdata('id') ) ) {
-			redirect(base_url('index.php/main_controller/'));		
+			redirect(base_url('Main_controller/'));		
 		}
 
 		$this->load->model('Board_Model');
@@ -175,7 +178,7 @@ class Main_controller extends CI_Controller {
 			echo "Error Encounter";
 			return;
 		}
-		redirect('main_controller/board');
+		redirect('Main_controller/board');
 	}
 
 	public function getBoardById()
@@ -194,31 +197,37 @@ class Main_controller extends CI_Controller {
 		echo $id;
 		$boardData = $this->Board_Model->updateBoard($id, $boardName, $boardDesc);
 		// var_dump($boardData); die();
-		redirect('main_controller/board');
+		redirect('Main_controller/board');
 	}
 
 	public function deleteBoard() {
-		// echo "delete board"; die();
 		$id = $this->uri->segment(3);
 		$result = $this->Board_Model->deleteBoard($id);
 		// var_dump($result); die();
-		redirect(('main_controller/board'));
+		redirect(('Main_controller/board'));
 	}
 
 	public function boardList() 
 	{
 		if( empty( $this->session->userdata('id') ) ) {
-			redirect('main_controller');
+			redirect('Main_controller');
 		}
+		$id = $this->uri->segment(3);
+		$data['board_name'] = $this->Board_Model->getBoardById($id);
+		// echo "<pre>";
+		// var_dump($data);
+		// echo $data['board_name']->board_name; 
+		// echo "</pre>";
+		// die();
 		$this->load->view('templates/header_list');
-		$this->load->view('list');
+		$this->load->view('list',$data);
 	}
 
 	public function createList()
 	{
 		$id_board = $this->uri->segment(3);
 		$this->List_Model->insertList($id_board);
-		redirect('main_controller/boardList/'.$id_board);
+		redirect('Main_controller/boardList/'.$id_board);
 	}
 
 	public function getListById()
@@ -237,7 +246,7 @@ class Main_controller extends CI_Controller {
 		// echo $id;
 		$boardList = $this->List_Model->updateList($id, $listName);
 		// var_dump($id_board); var_dump($boardList); die();
-		redirect('main_controller/boardList/'.$id_board);
+		redirect('Main_controller/boardList/'.$id_board);
 	}
 
 	public function deleteListById()
@@ -253,9 +262,19 @@ class Main_controller extends CI_Controller {
 		$id_board = $this->uri->segment(3);
 		$this->load->model('Card_Model');
 		$this->Card_Model->insertCard($id_list);
-		redirect('main_controller/boardList/'.$id_board);
+		redirect('Main_controller/boardList/'.$id_board);
 	}
 
+	// Get a card of an id (card)
+	public function getCardById()
+	{
+		$id = $this->input->get('id');
+		$response = $this->Card_Model->getCardById($id);
+		header('Content-Type: application/json');
+		echo json_encode($response);
+	}
+
+	// Get All card from specific id_list
 	public function getCardByIdList()
 	{
 		$id_list = $this->input->get('id');
@@ -266,9 +285,53 @@ class Main_controller extends CI_Controller {
 		// die();
 	}
 
+	// update a card by id
+	public function updateCard()
+	{
+		$id = $this->input->post('id');
+		$id_list = $this->input->post('current_list');
+		$id_board = $this->input->post('id_board');
+		$cardData = array(
+			'card_name' => $this->input->post('card_name'),
+			'card_desc' => $this->input->post('card_desc')
+		);
+		$response = $this->Card_Model->updateCard($id, $id_list, $cardData);
+		// var_dump($response); die();
+		if(!$response) {
+			echo "Error Encounter";
+			return;
+		}
+		redirect('Main_controller/boardList/'.$id_board);
+	}
+
+	// get lists of board
+	public function getListOfBoard()
+	{
+		$id_board = $this->input->get('id_board');		
+		$dataList = $this->List_Model->getList($id_board);
+		// var_dump($dataList); die();	
+		$response = [];
+		foreach($dataList as $row) {
+			array_push($response, [
+				'list_name' => $row->list_name,
+				'list_id' => $row->id,
+			]);
+			// var_dump($response);
+		}
+		header('Content-Type: application/json');		
+		echo json_encode( $response);		
+	}
+
+	public function deleteCardById()
+	{
+		$id = $this->input->get('id');
+		$response = $this->Card_Model->deleteCardById($id);
+		// return;
+	}
+
 	public function getListOfCards() {
-		$id_list = $this->input->get('id');		
-		$dataList = $this->List_Model->getList($id_list);
+		$id_board = $this->input->get('id');		
+		$dataList = $this->List_Model->getList($id_board);
 		// var_dump($dataList); die();	
 		$response = [];
 		foreach($dataList as $row) {

@@ -8,18 +8,18 @@ class List_Model extends CI_Model {
 			'id_board' => $id_board,
 	        'list_name' => $this->input->post('listName')
     	);
-    	return $this->db->insert('list', $data);
+    	return $this->db->insert('myboard_list', $data);
 	}
 
 	public function getList($id_board)
 	{
-		$query = $this->db->get_where('list', array('id_board' => $id_board));
+		$query = $this->db->get_where('myboard_list', array('id_board' => $id_board));
 		return $query->result();
 	}
 
 	public function getListById($id)
 	{
-		$response = $this->db->get_where('list', array('id' => $id));
+		$response = $this->db->get_where('myboard_list', array('id' => $id));
 		return $response->row();
 	}
 
@@ -27,13 +27,13 @@ class List_Model extends CI_Model {
 	{
 		$this->db->set('list_name', $listName);
 		$this->db->where(array('id'=> $id));
-		$response = $this->db->update('list');
+		$response = $this->db->update('myboard_list');
 		return $response;
 	}
 
 	public function deleteListById($id)
 	{
-		$response = $this->db->delete('list', array('id' => $id));
+		$response = $this->db->delete('myboard_list', array('id' => $id));
 		return $response;
 	}
 }

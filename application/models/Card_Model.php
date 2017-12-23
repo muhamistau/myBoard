@@ -9,13 +9,37 @@ class Card_Model extends CI_Model {
 	        'card_name' => $this->input->post('card_name'),
 	        'card_desc' => $this->input->post('card_desc')
     	);
-    	return $this->db->insert('card', $data);
+    	return $this->db->insert('myboard_card', $data);
 	}
 
+	// Get All Card of an id_list
 	public function getCard($id_list)
 	{
-		$query = $this->db->get_where('card', array('id_list' => $id_list));
+		$query = $this->db->get_where('myboard_card', array('id_list' => $id_list));
 		return $query->result();
+	}
+
+	public function deleteCardById($id)
+	{
+		$response = $this->db->delete('myboard_card', array('id' => $id));
+		return $response;
+	}
+
+	// Get a card from id (card)
+	public function getCardById($id)
+	{
+		$response = $this->db->get_where('myboard_card',array('id' => $id));
+		return $response->row();
+	}
+
+	public function updateCard($id, $id_list, $cardData){
+
+		$this->db->set('card_name', $cardData['card_name']);
+		$this->db->set('card_desc', $cardData['card_desc']);
+		$this->db->set('id_list', $id_list);
+		$this->db->where(array('id'=> $id));
+		$response = $this->db->update('myboard_card');
+		return $response;
 	}
 }
 

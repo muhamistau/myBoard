@@ -4,17 +4,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Board_Model extends CI_Model {
 	public function insertBoard($data)
 	{
-    	return $this->db->insert('board', $data);
+    	return $this->db->insert('myboard_board', $data);
 	}
 
 	public function getBoard()
 	{
-		$query = $this->db->get_where('board', array('id_user' => $this->session->userdata('id')));
+		$query = $this->db->get_where('myboard_board', array('id_user' => $this->session->userdata('id')));
 		return $query->result();
 	}
 
 	public function getBoardById($id) {
-		$query = $this->db->get_where('board', array('id' => $id, 'id_user' => $this->session->userdata('id') ));
+		$query = $this->db->get_where('myboard_board', array('id' => $id, 'id_user' => $this->session->userdata('id') ));
 		return $query->row();
 	}
 
@@ -22,13 +22,13 @@ class Board_Model extends CI_Model {
 		$this->db->set('board_name', $boardName);
 		$this->db->set('board_desc', $boardDesc);
 		$this->db->where(array('id'=> $id, 'id_user' => $this->session->userdata('id') ));
-		$query = $this->db->update('board');
+		$query = $this->db->update('myboard_board');
 		return $query;
 	}
 
 	public function deleteBoard($id)
 	{
-		$query = $this->db->delete('board', array('id' => $id));
+		$query = $this->db->delete('myboard_board', array('id' => $id));
 		return $query;
 	}
 }

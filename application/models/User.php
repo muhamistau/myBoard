@@ -9,7 +9,7 @@ class User extends CI_Model {
 	public function login($username, $pass)
 	{
 		$query  = "SELECT * 
-				FROM user 
+				FROM myboard_user 
 				WHERE username = ". $this->db->escape($username) .
 				" AND  pass = sha1(" . $this->db->escape($pass) . ")" ;
 
@@ -28,8 +28,8 @@ class User extends CI_Model {
 	        'username' => $this->input->post('username'),
 	        'pass' => sha1( $this->input->post('password') )
     	);
-	
-		return $this->db->insert('user', $data);
+		$result = $this->db->insert('myboard_user', $data);
+		return $result;
 	}
 
 }
